@@ -22,8 +22,6 @@ CMakeLists.txt
 # Ignore Directory #
 ####################
 .idea/
-output/
-traces/
 FxA/cfile/
 FxA/sfile
 __pycache__

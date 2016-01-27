@@ -1,0 +1,22 @@
+Cache Settings
+C: 15
+B: 5
+S: 3
+F: EAGER
+R: LRU
+
+Cache Statistics
+Accesses: 501468
+Reads: 289766
+Read hits: 276659
+Read misses: 13107
+Writes: 211702
+Write hits: 169438
+Write misses: 42264
+Misses: 55371
+Hit Time: 2
+Miss Penalty: 60
+Miss rate: 0.110418
+Average access time (AAT): 8.625069
+Storage Overhead: 41984
+Storage Overhead Ratio: 0.160156

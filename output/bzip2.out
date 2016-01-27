@@ -1,0 +1,22 @@
+Cache Settings
+C: 15
+B: 6
+S: 5
+F: BLOCKING
+R: NMRU_FIFO
+
+Cache Statistics
+Accesses: 544514
+Reads: 369344
+Read hits: 368750
+Read misses: 594
+Writes: 175170
+Write hits: 174543
+Write misses: 627
+Misses: 1221
+Hit Time: 7
+Miss Penalty: 58
+Miss rate: 0.002242
+Average access time (AAT): 7.130057
+Storage Overhead: 3072
+Storage Overhead Ratio: 0.011719
