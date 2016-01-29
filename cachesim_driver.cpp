@@ -1,7 +1,15 @@
+#ifdef CCOMPILER
+#include <stdio.h>
+#include <inttypes.h>
+#include <stdlib.h>
+#include <string.h>
+#else
 #include <cstdio>
 #include <cinttypes>
 #include <cstdlib>
 #include <cstring>
+#endif
+
 #include <unistd.h>
 #include "cachesim.hpp"
 
@@ -104,7 +112,7 @@ void print_statistics(cache_stats_t* p_stats) {
     printf("Accesses: %" PRIu64 "\n", p_stats->accesses);
     printf("Reads: %" PRIu64 "\n", p_stats->reads);
     printf("Read misses to L1: %" PRIu64 "\n", p_stats->read_misses_l1);
-    printf("Read misses to L2: %" PRIu64 "\n", p_stats->read_misses_l1);
+    printf("Read misses to L2: %" PRIu64 "\n", p_stats->read_misses_l2);
     printf("Writes: %" PRIu64 "\n", p_stats->writes);
     printf("Write misses to L1: %" PRIu64 "\n", p_stats->write_misses_l1);
     printf("Write misses to L2: %" PRIu64 "\n", p_stats->write_misses_l2);

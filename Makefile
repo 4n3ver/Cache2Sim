@@ -1,5 +1,12 @@
-CXXFLAGS := -g -Wall -std=c++0x -lm
-CXX=c++
+CXXFLAGS := -g -Wall -lm
+
+ifdef C
+CXX:=cc
+CXXFLAGS += -DCCOMPILER
+else
+CXX := g++
+CXXFLAGS += -std=c++0x
+endif
 
 all: cachesim
 
