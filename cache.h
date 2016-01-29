@@ -13,7 +13,7 @@
     #define DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
     #define DEBUG_IF(x) x
 #else
-#define DEBUG_PRINT(...)
+    #define DEBUG_PRINT(...)
     #define DEBUG_IF(x)
 #endif
 
@@ -21,15 +21,14 @@
 #include <errno.h>
 #include <stdint.h>
 
+typedef struct s_block {
+    uint64_t tag;
+    bool dirty;
+    bool valid;
+} block, *block_ptr;
 
 class cache {
     private:
-        typedef struct s_block {
-            uint64_t tag;
-            uint64_t index;
-            uint64_t offset;
-        } block;
-
         uint8_t shift_index;
         uint8_t shift_tag;
 
@@ -41,6 +40,7 @@ class cache {
         uint64_t mask_index;
         uint64_t mask_tag;
 
+        block_ptr *data;
 
     public:
         cache(int c, int b, int s);
@@ -56,7 +56,7 @@ class cache {
         uint64_t offset_of(uint64_t address) {
             return address & mask_off;
         }
+
+        ~cache();
 };
-
-
 #endif //CACHE2SIM_CACHE_H

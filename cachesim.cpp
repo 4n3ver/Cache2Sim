@@ -1,4 +1,6 @@
 #include "cachesim.hpp"
+#include "cache.h"
+#include <queue>
 
 /**
  * Subroutine for initializing the cache. You many add and initialize any global or heap
@@ -17,6 +19,13 @@
  */
 void setup_cache(uint64_t c1, uint64_t b1, uint64_t s1, uint64_t v,
                  uint64_t c2, uint64_t b2, uint64_t s2) {
+    if (c2 >= c1 && b2 >= b1 && s2 >= s1 && v <= 4 && v >= 0) {
+        cache *l1 = new cache(c1, b1, s1);
+        cache *l2 = new cache(c2, b2, s2);
+        cache *vc = new cache()
+    } else {
+        throw EINVAL;
+    }
 }
 /**
  * Subroutine that simulates the cache one trace event at a time.
