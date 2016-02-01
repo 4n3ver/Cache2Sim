@@ -5,7 +5,7 @@
 
 #include <cstdint>
 #include <deque>
-#include <stdlib.h>
+#include <cstdlib>
 #include "cache.h"
 
 struct cache_stats_t {

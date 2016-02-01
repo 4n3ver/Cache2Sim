@@ -31,6 +31,18 @@ typedef struct s_block {
     uint64_t address;
     bool dirty;
     bool valid;
+
+    s_block() {
+        reset();
+    }
+
+    void reset() {
+        tag = 0;
+        last_access_time = 0;
+        address = 0;
+        dirty = false;
+        valid = false;
+    }
 } block, *block_ptr;
 
 class cache {

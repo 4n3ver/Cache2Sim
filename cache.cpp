@@ -2,6 +2,7 @@
 // Created by lennart on 1/27/16.
 //
 
+#include <string.h>
 #include "cache.h"
 
 
@@ -37,7 +38,6 @@ cache::cache(int c, int b, int s) {
         data = new block_ptr[lim_index];
         for (uint64_t i = 0; i < lim_index; i++) {
             data[i] = new block[lim_set];
-            *data[i] = {0};
         }
 
         if (DEBUG_IF(s == 0)) {
@@ -66,12 +66,13 @@ cache::cache(int c, int b, int s) {
         for (int index = 0; index < lim_index; index++) {
             for (int set = 0; set < lim_set; set++) {
                 DEBUG_ASSERT(data[index][set].tag == 0);
+                DEBUG_ASSERT(data[index][set].address == 0);
                 DEBUG_ASSERT(data[index][set].last_access_time == 0);
                 DEBUG_ASSERT(!data[index][set].dirty);
                 DEBUG_ASSERT(!data[index][set].valid);
             }
         }
-        DEBUG_PRINT("Init test passed...\n");
+        DEBUG_PRINT("\nInit test passed...\n");
         clock = 0;
     } else {
         throw EINVAL;

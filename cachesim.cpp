@@ -104,7 +104,7 @@ static block_ptr repair_l1_miss(
     }
     DEBUG_ASSERT(!(blck->valid));
     DEBUG_ASSERT(!(blck->dirty));
-    *blck = {0};
+    blck->reset();
     l1->store_block(address, blck);
     DEBUG_ASSERT(blck->valid);
     if (type == READ) {
@@ -138,7 +138,7 @@ static block_ptr repair_l2_miss(
     }
     DEBUG_ASSERT(!(blck->valid));
     DEBUG_ASSERT(!(blck->dirty));
-    *blck = {0};
+    blck->reset();
     l2->store_block(address, blck);
     DEBUG_ASSERT(blck->valid);
     if (type == READ) {

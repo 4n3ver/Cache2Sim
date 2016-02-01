@@ -7,10 +7,11 @@
 #include <cstdio>
 #include <cinttypes>
 #include <cstdlib>
-#include <cstring>
+
 #endif
 
 #include <unistd.h>
+#include <string.h>
 #include "cachesim.hpp"
 
 void print_help_and_exit(void) {
