@@ -15,9 +15,8 @@
  * @s2 The number of blocks in each set of L2: 2^s2 blocks per set.
  * Note: c2 >= c1, b2 >= b1 and s2 >= s1.
  */
-void setup_cache(
-        uint64_t c1, uint64_t b1, uint64_t s1, uint64_t v,
-        uint64_t c2, uint64_t b2, uint64_t s2) {
+void setup_cache(uint64_t c1, uint64_t b1, uint64_t s1, uint64_t v,
+                 uint64_t c2, uint64_t b2, uint64_t s2) {
     if (c2 >= c1 && b2 >= b1 && s2 >= s1 && v <= 4 && v >= 0) {
         l1 = new cache((int) c1, (int) b1, (int) s1);
         l2 = new cache((int) c2, (int) b2, (int) s2);
@@ -27,7 +26,6 @@ void setup_cache(
         throw EINVAL;
     }
 }
-
 /**
  * Subroutine that simulates the cache one trace event at a time.
  * XXX: You're responsible for completing this routine
@@ -36,7 +34,7 @@ void setup_cache(
  * @arg  The target memory address
  * @p_stats Pointer to the statistics structure
  */
-void cache_access(char type, uint64_t arg, cache_stats_t *p_stats) {
+void cache_access(char type, uint64_t arg, cache_stats_t* p_stats) {
     p_stats->accesses++;
     if (type == READ) {
         p_stats->reads++;
@@ -57,6 +55,8 @@ void complete_cache(cache_stats_t *p_stats) {
     delete l1;
     delete l2;
 }
+
+// ADDITION BELOW
 
 static void cache_access(
         cache *cache_ptr, char type, uint64_t address,
@@ -182,3 +182,6 @@ static uint64_t swap_victim(
     DEBUG_ASSERT(vc.size() <= MAX_VC_SIZE);
     throw VC_MISS;
 }
+
+// ADDITION ABOVE
+

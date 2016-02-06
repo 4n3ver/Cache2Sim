@@ -7,11 +7,10 @@
 #include <cstdio>
 #include <cinttypes>
 #include <cstdlib>
-
+#include <cstring>
 #endif
 
 #include <unistd.h>
-#include <string.h>
 #include "cachesim.hpp"
 
 void print_help_and_exit(void) {
@@ -22,9 +21,9 @@ void print_help_and_exit(void) {
     printf("  -b B1\t\tSize of each block in bytes is 2^B1\n");
     printf("  -s S1\t\tNumber of blocks per set is 2^S1\n");
     printf("Victim cache parameters:\n");
-    printf("  -v V\t\tNumber of blocks per set is 2^V\n");
+    printf("  -v V\t\tNumber of blocks per set is V\n");
     printf("L2 parameters:\n");
-    printf("  -C C2\t\tNumber of blocks per set is 2^C2\n");
+    printf("  -C C2\t\tTotal size in bytes is 2^C2\n");
     printf("  -B B2\t\tSize of each block in bytes is 2^B2\n");
     printf("  -S S2\t\tNumber of blocks per set is 2^S2\n");
     exit(0);
@@ -111,14 +110,16 @@ int main(int argc, char* argv[]) {
 void print_statistics(cache_stats_t* p_stats) {
     printf("Cache Statistics\n");
     printf("Accesses: %" PRIu64 "\n", p_stats->accesses);
+    printf("Accesses to L2: %" PRIu64 "\n", p_stats->accesses_l2);
+    printf("Accesses to VC: %" PRIu64 "\n", p_stats->accesses_vc);
     printf("Reads: %" PRIu64 "\n", p_stats->reads);
     printf("Read misses to L1: %" PRIu64 "\n", p_stats->read_misses_l1);
     printf("Read misses to L2: %" PRIu64 "\n", p_stats->read_misses_l2);
     printf("Writes: %" PRIu64 "\n", p_stats->writes);
     printf("Write misses to L1: %" PRIu64 "\n", p_stats->write_misses_l1);
     printf("Write misses to L2: %" PRIu64 "\n", p_stats->write_misses_l2);
-    printf("Write backs to L1: %" PRIu64 "\n", p_stats->write_back_l1);
-    printf("Write backs to L2: %" PRIu64 "\n", p_stats->write_back_l2);
+    printf("Write backs from L1: %" PRIu64 "\n", p_stats->write_back_l1);
+    printf("Write backs from L2: %" PRIu64 "\n", p_stats->write_back_l2);
     printf("L1 victims hit in victim cache: %" PRIu64 "\n", p_stats->victim_hits);
     printf("Average access time (AAT) for L1: %f\n", p_stats->avg_access_time_l1);
 }
