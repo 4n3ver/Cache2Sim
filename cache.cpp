@@ -11,7 +11,7 @@ block_ptr cache::fetch_block(uint64_t address,
     uint64_t index = index_of(address);
 
     block_ptr set = data[index];
-    for (int i = 0; i < lim_set; i++) {
+    for (uint64_t i = 0; i < lim_set; i++) {
         if (cond(&set[i])) {
             return &set[i];
         }
@@ -22,6 +22,7 @@ block_ptr cache::fetch_block(uint64_t address,
 cache::cache(int c, int b, int s) {
     /* TODO: add more condition to ensure valid args */
     if (c < 64 && c >= 0 && b + s <= c && b >= 0 && s >= 0) {
+        this->s = s;
         shift_index = (uint8_t) b;
         shift_tag = (uint8_t) (c - s);
 
@@ -42,11 +43,9 @@ cache::cache(int c, int b, int s) {
 
         if (DEBUG_IF(s == 0)) {
             DEBUG_PRINT("Direct-mapped cache\n");
-        }
-        else if (DEBUG_IF(s == c - b)) {
+        } else if (DEBUG_IF(s == c - b)) {
             DEBUG_PRINT("Fully-associative cache\n");
-        }
-        else {
+        } else {
             DEBUG_PRINT("%d-way associative cache\n", 1 << s);
         }
 
@@ -63,8 +62,8 @@ cache::cache(int c, int b, int s) {
         DEBUG_PRINT("Index shift: %d\n", shift_index);
         DEBUG_PRINT("Tag shift: %d\n", shift_tag);
 
-        for (int index = 0; index < lim_index; index++) {
-            for (int set = 0; set < lim_set; set++) {
+        for (uint64_t index = 0; index < lim_index; index++) {
+            for (uint64_t set = 0; set < lim_set; set++) {
                 DEBUG_ASSERT(data[index][set].tag == 0);
                 DEBUG_ASSERT(data[index][set].address == 0);
                 DEBUG_ASSERT(data[index][set].last_access_time == 0);
@@ -90,6 +89,7 @@ cache::~cache() {
 // row == index
 // col == set
 block_ptr cache::access(uint64_t address) {
+    DEBUG_ASSERT(clock < UINT64_MAX);
     clock++;
     uint64_t tag = tag_of(address);
     block_ptr ret = fetch_block(address, [tag](block_ptr blck) -> bool {
@@ -98,15 +98,18 @@ block_ptr cache::access(uint64_t address) {
 
     if (ret != nullptr) {
         ret->last_access_time = clock;
+        DEBUG_PRINT("[acccess] access %lx to HIT\n", address);
         return ret;
     } else {
+        DEBUG_PRINT("[acccess] access %lx to MISS\n", address);
         throw ACCESS_MISS;
     }
 }
 
 void cache::store_block(uint64_t address, block_ptr location) {
+    location->reset();
     location->tag = tag_of(address);
-    location->address = address & ~mask_off;
+    location->address = address;
     location->last_access_time = clock;
     location->valid = true;
 }
@@ -117,7 +120,7 @@ block_ptr cache::find_victim_block(uint64_t address) {
     block_ptr set = data[index];
     block_ptr lru = &set[0];
     uint64_t min = lru->last_access_time;
-    for (int i = 1; i < lim_set; i++) {
+    for (uint64_t i = 1; i < lim_set; i++) {
         if (min > set[i].last_access_time) {
             lru = &set[i];
             min = lru->last_access_time;
@@ -134,6 +137,7 @@ block_ptr cache::find_empty_block(uint64_t address) {
     if (ret != nullptr) {
         return ret;
     } else {
+        DEBUG_PRINT("[find_empty_block] SET FULL\n");
         throw SET_FULL;
     }
 }

@@ -7,9 +7,11 @@
 #include <cstdint>
 #endif
 
-#define SHOULD_NEVER_HAPPEN system("exit")
+#include <cstdlib>
+#include <iostream>
 #include <deque>
 #include "cache.h"
+#define SHOULD_NEVER_HAPPEN system("exit")
 
 struct cache_stats_t {
     uint64_t accesses;
@@ -48,26 +50,8 @@ static const char     WRITE = 'w';
 // ADDITION BELOW
 typedef block_ptr (*repair)(char, uint64_t, cache_stats_t *);
 
-static const int VC_MISS = 979;
+const int VC_MISS = 979;
 
-static cache *l1;
-static cache *l2;
-static uint64_t MAX_VC_SIZE;
-static std::deque<uint64_t> vc;
-
-static uint64_t swap_victim(
-        uint64_t target, block_ptr victim, cache_stats_t *p_stats);
-
-static void cache_access(
-        cache *cache_ptr, char type, uint64_t address,
-        cache_stats_t *p_stats, repair miss_repair);
-
-static block_ptr repair_l1_miss(
-        char type, uint64_t address, cache_stats_t *p_stats);
-
-static block_ptr repair_l2_miss(
-        char type, uint64_t address, cache_stats_t *p_stats);
-        
 // ADDITION ABOVE
 
 #endif /* CACHESIM_HPP */

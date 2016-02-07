@@ -11,12 +11,12 @@
     #include <stdio.h>
     #include <assert.h>
 
-    #define DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
+    #define DEBUG_PRINT(...) /*fprintf(stderr, __VA_ARGS__)*/
     #define DEBUG_IF(x) x
     #define DEBUG_ASSERT(x) assert(x)
 #else
     #define DEBUG_PRINT(...)
-    #define DEBUG_IF(x)
+    #define DEBUG_IF(x) false
     #define DEBUG_ASSERT(x)
 #endif
 
@@ -63,6 +63,9 @@ class cache {
 
         block_ptr *data;
 
+        int s;
+
+
         block_ptr fetch_block(uint64_t address,
                               std::function<bool (block_ptr)> cond);
 
@@ -71,6 +74,10 @@ class cache {
         static const int SET_FULL = 1099;
 
         cache(int c, int b, int s);
+
+        int get_s() {
+            return s;
+        }
 
         uint64_t getMask_off() const {
             return mask_off;
