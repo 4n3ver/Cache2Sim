@@ -126,6 +126,7 @@ block_ptr cache::find_victim_block(uint64_t address) {
             min = lru->last_access_time;
         }
     }
+    DEBUG_PRINT("[find_victim_block] evicting %lx for %lx\n", lru->address, address);
     return lru;
 }
 

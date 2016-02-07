@@ -1,5 +1,8 @@
 #include "cachesim.hpp"
 
+
+static uint64_t MAX_VC_SIZE;
+
 typedef struct trace {
     std::string stat_1;
     std::string stat_2;
@@ -16,7 +19,7 @@ typedef struct trace {
     }
 
     std::string get_trace() {
-        std::string ret = stat_1 + stat_vc + stat_2 + "\n";
+        std::string ret = stat_1 + (MAX_VC_SIZE ? stat_vc : "") + stat_2 + "\n";
         reset();
         return ret;
     }
@@ -48,11 +51,10 @@ typedef struct trace {
 
 static cache *l1;
 static cache *l2;
-static uint64_t MAX_VC_SIZE;
 static std::deque<uint64_t> vc;
 static trace_t last;
 
-static void cache_access(
+static block_ptr cache_access(
         cache *cache_ptr, char type, uint64_t address,
         cache_stats_t *p_stats, repair miss_repair);
 
@@ -64,35 +66,38 @@ static block_ptr repair_l2_miss(
 
 
 static uint64_t vc_access(uint64_t target, cache_stats_t *p_stats) {
-    p_stats->accesses_vc++;
-    uint64_t offset_mask = ~(l1->getMask_off());
-    uint64_t masked_target = target & offset_mask;
-    for (std::deque<uint64_t>::iterator iter = vc.begin(); iter != vc.end(); iter++) {
-        if ((*iter & offset_mask) == masked_target) {
-            // swapping and return
-            p_stats->victim_hits++;
-            target = *iter;
-            DEBUG_ASSERT((target & ~(l1->getMask_off())) == masked_target);
-            DEBUG_PRINT("[vc_access] VC_HIT %lx found\n", target);
-            vc.erase(iter);
-            last.hit_vc();
-            return target;
+    if (MAX_VC_SIZE) {
+        p_stats->accesses_vc++;
+        uint64_t offset_mask = ~(l1->getMask_off());
+        uint64_t masked_target = target & offset_mask;
+        for (std::deque<uint64_t>::iterator iter = vc.begin(); iter < vc.end(); iter++) {
+            if ((*iter & offset_mask) == masked_target) {
+                p_stats->victim_hits++;
+                target = *iter;
+                DEBUG_ASSERT((target & ~(l1->getMask_off())) == masked_target);
+                DEBUG_PRINT("[vc_access] VC_HIT %lx found\n", target);
+                vc.erase(iter);
+                last.hit_vc();
+                return target;
+            }
         }
+        DEBUG_PRINT("[vc_access] VC_MISS\n");
+        last.miss_vc();
     }
-    DEBUG_PRINT("[vc_access] VC_MISS\n");
-    last.miss_vc();
     throw VC_MISS;
 }
 
 static void vc_push(uint64_t address) {
-    DEBUG_ASSERT(vc.size() <= MAX_VC_SIZE);
-    if (vc.size() == MAX_VC_SIZE) {
-        DEBUG_PRINT("[swap_victim] VC full, burying %lx\n", vc.front());
-        vc.pop_front();
+    if (MAX_VC_SIZE) {
+        DEBUG_ASSERT(vc.size() <= MAX_VC_SIZE);
+        if (vc.size() == MAX_VC_SIZE) {
+            DEBUG_PRINT("[swap_victim] VC full, burying %lx\n", vc.front());
+            vc.pop_front();
+        }
+        DEBUG_PRINT("[swap_victim] pushing victim %lx\n", address);
+        vc.push_back(address);
+        DEBUG_ASSERT(vc.size() <= MAX_VC_SIZE);
     }
-    DEBUG_PRINT("[swap_victim] pushing victim %lx\n", address);
-    vc.push_back(address);
-    DEBUG_ASSERT(vc.size() <= MAX_VC_SIZE);
 }
 
 /**
@@ -170,7 +175,7 @@ void complete_cache(cache_stats_t *p_stats) {
 
 // ADDITION BELOW
 
-static void cache_access(
+static block_ptr cache_access(
         cache *cache_ptr, char type, uint64_t address,
         cache_stats_t *p_stats, repair miss_repair) {
     DEBUG_PRINT("[cache_acccess] %s access at %lx on %s\n", type == READ ? "Read" : "Write", address,
@@ -193,6 +198,7 @@ static void cache_access(
     if (type == WRITE) {
         blck->dirty = true;
     }
+    return blck;
 }
 
 static block_ptr repair_l1_miss(

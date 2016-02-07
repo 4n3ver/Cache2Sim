@@ -5,7 +5,7 @@ s: 3
 v: 3
 C: 15
 B: 5
-S: 4
+S: 10
 
 M1MVM2
 M1MVM2
@@ -507721,4 +507721,4 @@ Write misses to L2: 0
 Write backs from L1: 9715
 Write backs from L2: 7985
 L1 victims hit in victim cache: 1145
-Average access time (AAT) for L1: 7.192055
+Average access time (AAT) for L1: 7.236534
