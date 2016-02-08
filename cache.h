@@ -49,7 +49,7 @@ typedef struct s_block {
     }
 } block, *block_ptr;
 
-/* Cache object, consists of 2 day array of block, row is index, col is set */
+/* Cache object, consists of 2-d array of block, row is index, col is set */
 class cache {
 
     /* This is private. */
