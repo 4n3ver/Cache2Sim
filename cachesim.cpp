@@ -1,6 +1,5 @@
 #include "cachesim.hpp"
 
-
 static uint64_t MAX_VC_SIZE;
 
 typedef struct trace {
@@ -19,7 +18,7 @@ typedef struct trace {
     }
 
     std::string get_trace() {
-        std::string ret = stat_1 + (MAX_VC_SIZE ? stat_vc : "") + stat_2 + "\n";
+        std::string ret = stat_1 + (MAX_VC_SIZE ? stat_vc : "") + stat_2;
         reset();
         return ret;
     }
@@ -143,7 +142,7 @@ void cache_access(char type, uint64_t arg, cache_stats_t *p_stats) {
         p_stats->writes++;
     }
     cache_access(l1, type, arg, p_stats, repair_l1_miss);
-    std::cout << last.get_trace();
+    std::cout << last.get_trace() << std::endl;
 }
 
 /**
@@ -255,12 +254,16 @@ static block_ptr repair_l2_miss(
     block_ptr blck = nullptr;
     try {
         blck = l2->find_empty_block(address);
-    } catch (int errno_empty) {
-        if (errno_empty == cache::SET_FULL) {
+        DEBUG_ASSERT(!(blck->valid));
+    } catch (int errno_full) {
+        if (errno_full == cache::SET_FULL) {
             blck = l2->find_victim_block(address);
+            DEBUG_ASSERT(blck->valid);
         } else {
             SHOULD_NEVER_HAPPEN;
         }
+    }
+    if (blck->valid) {
         if (blck->dirty) {
             p_stats->write_back_l2++;
             blck->dirty = false;
@@ -273,12 +276,12 @@ static block_ptr repair_l2_miss(
     DEBUG_ASSERT(blck->valid);
     if (type == READ) {
         p_stats->read_misses_l2++;
-        last.miss_l2();
     } else if (type == WRITE) {
         p_stats->write_misses_l2++;
     } else {
         SHOULD_NEVER_HAPPEN;
     }
+    last.miss_l2();
     return blck;
 }
 

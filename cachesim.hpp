@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <deque>
 #include "cache.h"
 #define SHOULD_NEVER_HAPPEN system("exit")
