@@ -275,12 +275,12 @@ static block_ptr repair_l2_miss(
     DEBUG_ASSERT(blck->valid);
     if (type == READ) {
         p_stats->read_misses_l2++;
+        last.miss_l2();
     } else if (type == WRITE) {
         p_stats->write_misses_l2++;
     } else {
         SHOULD_NEVER_HAPPEN;
     }
-    last.miss_l2();
     return blck;
 }
 
