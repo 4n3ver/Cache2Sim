@@ -52,7 +52,6 @@ static const char     WRITE = 'w';
 typedef block_ptr (*repair)(char, uint64_t, cache_stats_t *);
 
 const int VC_MISS = 979;
-
 // ADDITION ABOVE
 
 #endif /* CACHESIM_HPP */

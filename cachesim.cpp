@@ -125,7 +125,6 @@ void setup_cache(uint64_t c1, uint64_t b1, uint64_t s1, uint64_t v,
         throw EINVAL;
     }
 }
-
 /**
  * Subroutine that simulates the cache one trace event at a time.
  * XXX: You're responsible for completing this routine
@@ -134,7 +133,7 @@ void setup_cache(uint64_t c1, uint64_t b1, uint64_t s1, uint64_t v,
  * @arg  The target memory address
  * @p_stats Pointer to the statistics structure
  */
-void cache_access(char type, uint64_t arg, cache_stats_t *p_stats) {
+void cache_access(char type, uint64_t arg, cache_stats_t* p_stats) {
     p_stats->accesses++;
     if (type == READ) {
         p_stats->reads++;
@@ -286,4 +285,3 @@ static block_ptr repair_l2_miss(
 }
 
 // ADDITION ABOVE
-
