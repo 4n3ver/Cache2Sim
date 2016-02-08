@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 rm -f *.log
 make clean; clear && clear
 make
