@@ -18,6 +18,8 @@ CMakeLists.txt
 *.o
 *.so
 *.pyc
+*.log
+cachesim
 
 # Ignore Directory #
 ####################
