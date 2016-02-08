@@ -1,3 +1,10 @@
+/**
+ * Handle high level logic of the multi-level cache (just 2-level) operation.
+ *
+ * @author  Yoel Ivan (yivan3@gatech.edu)
+ * @version 0.0a
+ */
+
 #ifndef CACHESIM_HPP
 #define CACHESIM_HPP
 
@@ -9,7 +16,6 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <fstream>
 #include <deque>
 #include "cache.h"
 #define SHOULD_NEVER_HAPPEN system("exit")

@@ -1,7 +1,16 @@
+/**
+ * Implementation file?
+ *
+ * @author  Yoel Ivan (yivan3@gatech.edu)
+ * @version 0.0a
+ */
+
 #include "cachesim.hpp"
 
+/* Max size of the Victim Cache in block, each block is as big as l1 cache, can be [0.4] */
 static uint64_t MAX_VC_SIZE;
 
+/* Hack so that the trace can be printed without too much mess. */
 typedef struct trace {
     std::string stat_1;
     std::string stat_2;
@@ -62,7 +71,6 @@ static block_ptr repair_l1_miss(
 
 static block_ptr repair_l2_miss(
         char type, uint64_t address, cache_stats_t *p_stats);
-
 
 static uint64_t vc_access(uint64_t target, cache_stats_t *p_stats) {
     if (MAX_VC_SIZE) {
@@ -172,6 +180,9 @@ void complete_cache(cache_stats_t *p_stats) {
 }
 
 // ADDITION BELOW
+/**
+ * Comment on the prototype.
+ */
 
 static void cache_access(
         cache *cache_ptr, char type, uint64_t address,

@@ -1,6 +1,6 @@
-//
-// Created by lennart on 1/27/16.
-//
+/**
+ * Comment on the header file.
+ */
 
 #include <string.h>
 #include "cache.h"
