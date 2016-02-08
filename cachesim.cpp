@@ -53,7 +53,7 @@ static cache *l2;
 static std::deque<uint64_t> vc;
 static trace_t last;
 
-static block_ptr cache_access(
+static void cache_access(
         cache *cache_ptr, char type, uint64_t address,
         cache_stats_t *p_stats, repair miss_repair);
 
@@ -173,7 +173,7 @@ void complete_cache(cache_stats_t *p_stats) {
 
 // ADDITION BELOW
 
-static block_ptr cache_access(
+static void cache_access(
         cache *cache_ptr, char type, uint64_t address,
         cache_stats_t *p_stats, repair miss_repair) {
     DEBUG_PRINT("[cache_acccess] %s access at %lx on %s\n", type == READ ? "Read" : "Write", address,
@@ -196,11 +196,20 @@ static block_ptr cache_access(
     if (type == WRITE) {
         blck->dirty = true;
     }
-    return blck;
 }
 
 static block_ptr repair_l1_miss(
         char type, uint64_t address, cache_stats_t *p_stats) {
+    try {
+        address = vc_access(address, p_stats);
+    } catch (int errno_vc) {
+        if (errno_vc == VC_MISS) {
+            p_stats->accesses_l2++;
+            cache_access(l2, READ, address, p_stats, repair_l2_miss);
+        } else {
+            SHOULD_NEVER_HAPPEN;
+        }
+    }
     block_ptr blck = nullptr;
     try {
         blck = l1->find_empty_block(address);
@@ -209,16 +218,6 @@ static block_ptr repair_l1_miss(
         if (errno_full == cache::SET_FULL) {
             blck = l1->find_victim_block(address);
             DEBUG_ASSERT(blck->valid);
-        } else {
-            SHOULD_NEVER_HAPPEN;
-        }
-    }
-    try {
-        address = vc_access(address, p_stats);
-    } catch (int errno_vc) {
-        if (errno_vc == VC_MISS) {
-            p_stats->accesses_l2++;
-            cache_access(l2, READ, address, p_stats, repair_l2_miss);
         } else {
             SHOULD_NEVER_HAPPEN;
         }
