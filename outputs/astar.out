@@ -177247,7 +177247,7 @@ H1****
 H1****
 H1****
 H1****
-M1MVH2
+M1MVM2
 H1****
 M1MVM2
 H1****
@@ -224920,7 +224920,7 @@ H1****
 M1MVH2
 H1****
 H1****
-M1MVM2
+M1MVH2
 H1****
 H1****
 H1****
@@ -501487,6 +501487,6 @@ Writes: 211702
 Write misses to L1: 39111
 Write misses to L2: 29
 Write backs from L1: 39627
-Write backs from L2: 38357
+Write backs from L2: 38356
 L1 victims hit in victim cache: 211
 Average access time (AAT) for L1: 31.722929

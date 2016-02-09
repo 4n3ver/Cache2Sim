@@ -7,7 +7,7 @@ trace = ['astar', 'bzip2', 'mcf', 'perlbench']
 for output in trace:
     print('##############################################################')
     print('Processing ' + output)
-    proc = int(0)
+    proc = int(1)
     with open('outputs/' + output + '.out') as ref, open(output + '.log') as act:       
         for ref_line, act_line in zip(ref, act):
             ref_line = ref_line.strip()

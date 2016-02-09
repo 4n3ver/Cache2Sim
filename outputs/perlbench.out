@@ -141700,7 +141700,7 @@ M1H2
 M1H2
 M1M2
 H1**
-M1M2
+M1H2
 H1**
 H1**
 H1**
@@ -189245,7 +189245,7 @@ M1H2
 H1**
 M1M2
 H1**
-M1M2
+M1H2
 H1**
 H1**
 H1**
@@ -190988,7 +190988,7 @@ H1**
 M1M2
 H1**
 H1**
-M1M2
+M1H2
 M1H2
 M1H2
 H1**
@@ -229362,7 +229362,7 @@ H1**
 H1**
 H1**
 H1**
-M1H2
+M1M2
 M1H2
 H1**
 H1**
@@ -507455,11 +507455,11 @@ Accesses to L2: 72599
 Accesses to VC: 0
 Reads: 302052
 Read misses to L1: 35427
-Read misses to L2: 22067
+Read misses to L2: 22065
 Writes: 205389
 Write misses to L1: 14441
 Write misses to L2: 0
 Write backs from L1: 22731
-Write backs from L2: 10284
+Write backs from L2: 10280
 L1 victims hit in victim cache: 0
-Average access time (AAT) for L1: 18.085806
+Average access time (AAT) for L1: 18.084454
