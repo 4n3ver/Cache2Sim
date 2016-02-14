@@ -44,9 +44,9 @@ def main():
                                             best_AAT = current_aat
                                             best_config = (c, b, s, v, C, B, S)
                                             print('(^_^)', end='')
-                                            sys.stdout.flush()
                                         else:
                                             print('.', end='')
+                                        sys.stdout.flush()
                                     else:
                                         result.write(
                                             '[FAILED CONFIG] ./cachesim -c %d -b %d -s %d -v %d -C %d -B %d -S %d < %s)' %
