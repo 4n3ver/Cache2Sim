@@ -7,6 +7,13 @@
 
 #include "cachesim.hpp"
 
+//#define TRACE
+#ifdef TRACE
+    #define TRACE_PRINT std::cout << last.get_trace() << std::endl
+#else
+    #define TRACE_PRINT
+#endif
+
 /* Max size of the Victim Cache in block, each block is as big as l1 cache, can be [0.4] */
 static uint64_t MAX_VC_SIZE;
 
@@ -149,7 +156,7 @@ void cache_access(char type, uint64_t arg, cache_stats_t* p_stats) {
         p_stats->writes++;
     }
     cache_access(l1, type, arg, p_stats, repair_l1_miss);
-    std::cout << last.get_trace() << std::endl;
+    TRACE_PRINT;
 }
 
 /**

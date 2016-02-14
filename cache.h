@@ -8,13 +8,16 @@
 #ifndef CACHE2SIM_CACHE_H
 #define CACHE2SIM_CACHE_H
 
-#define DEBUG_CACHE
-#ifdef DEBUG_CACHE
+#include <string>
+#include <errno.h>
+#include <stdint.h>
+#include <functional>
 
+#ifdef DEBUG_CACHE
     #include <stdio.h>
     #include <assert.h>
 
-    #define DEBUG_PRINT(...) /*fprintf(stderr, __VA_ARGS__)*/
+    #define DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
     #define DEBUG_IF(x) x
     #define DEBUG_ASSERT(x) assert(x)
 #else
@@ -22,11 +25,6 @@
     #define DEBUG_IF(x) false
     #define DEBUG_ASSERT(x)
 #endif
-
-#include <string>
-#include <errno.h>
-#include <stdint.h>
-#include <functional>
 
 /* Simple block struct that are not supposed to be exposed to user, but... */
 typedef struct s_block {

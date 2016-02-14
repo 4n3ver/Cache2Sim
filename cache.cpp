@@ -5,7 +5,6 @@
 #include <string.h>
 #include "cache.h"
 
-
 block_ptr cache::fetch_block(uint64_t address,
                              std::function<bool (block_ptr)> cond) {
     uint64_t index = index_of(address);
