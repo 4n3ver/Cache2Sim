@@ -1,5 +1,7 @@
 #!/usr/bin/python3.5
 
+import concurrent.futures
+import threading
 import sys
 import math
 import subprocess
@@ -8,66 +10,83 @@ import re
 L1_BUDGET = int(49152)  # 16
 L2_BUDGET = int(196608)  # 18
 TRACE = ''
+ext_aat = re.compile("\\(AAT\\) for L1: ([0-9\\.]+)")
+lock = threading.Lock()
+
+result = None
+
+# requires sync
+config_tried = int(0)
+config_failed = int(0)
+config_invalid = int(0)
+best_AAT = 65535
+best_config = (0, 0, 0, 0, 0, 0, 0)  # cbsvCBS
 
 
 def main():
-    ext_aat = re.compile("\\(AAT\\) for L1: ([0-9\\.]+)")
-    best_AAT = 65535
-    best_config = (0, 0, 0, 0, 0, 0, 0)  # cbsvCBS
-
-    config_tried = int(0)
-    config_failed = int(0)
-    config_invalid = int(0)
-
-    result = open('result_%s.txt' % TRACE.replace('traces/', '').replace('.trace', ''), 'w')
-    v = 4
-    for C in range(10, 19):
-        for B in range(0, C + 1):
-            for S in range(0, C - B + 1):
-                for c in range(10, min(C + 1, 17)):
-                    for b in range(0, min(c + 1, B + 1)):
-                        for s in range(0, min(c - b + 1, S + 1)):
-                            if is_validConfig(c, b, s, v, C, B, S):
-                                result = subprocess.run(
-                                    args='./cachesim -c %d -b %d -s %d -v %d -C %d -B %d -S %d < %s' %
-                                         (c, b, s, v, C, B, S, TRACE),
-                                    shell=True,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        for C in range(10, 19):
+            for B in range(0, C + 1):
+                for S in range(0, C - B + 1):
+                    for c in range(10, min(C + 1, 17)):
+                        for b in range(0, min(c + 1, B + 1)):
+                            for s in range(0, min(c - b + 1, S + 1)):
+                                executor.submit(
+                                    fn=simulate,
+                                    args=(c, b, s, 4, C, B, S)
                                 )
-                                if result.returncode == int(0):
-                                    config_tried += 1
-                                    stats = result.stdout.decode('utf-8')
-                                    current_aat = float(ext_aat.search(stats).group(1))
-                                    if current_aat < best_AAT:
-                                        best_AAT = current_aat
-                                        best_config = (c, b, s, v, C, B, S)
-                                        print('(^_^)', end='')
-                                    else:
-                                        print('.', end='')
-
-                                else:
-                                    result.write(
-                                        '[FAILED CONFIG] ./cachesim -c %d -b %d -s %d -v %d -C %d -B %d -S %d < %s)' %
-                                        (c, b, s, v, C, B, S, TRACE))
-                                    config_failed += 1
-                                    print('F', end='')
-                            else:
-                                result.write(
-                                    '[INVALID_CONFIG] L1=%d L2=%d (./cachesim -c %d -b %d -s %d -v %d -C %d -B %d '
-                                    '-S %d < %s)\n' % (cost(c, b, s, v), cost(C, B, S), c, b, s, v, C, B, S, TRACE))
-                                config_invalid += 1
-                                print('I', end='')
-                            sys.stdout.flush()
     sys.stdout.flush()
     result.write('\n\n=====================================================================\n')
     result.write('Best AAT: %f\n' % best_AAT)
     result.write('Best Configuration (c, b, s, v, C, B, S): %s\n' % str(best_config))
-    result.write('Simulated Configuration: %d\n', config_tried)
-    result.write('Invalid Configuration: %d\n', config_invalid)
-    result.write('Failed Configuration: %d\n', config_failed)
+    result.write('Simulated Configuration: %d\n' % config_tried)
+    result.write('Invalid Configuration: %d\n' % config_invalid)
+    result.write('Failed Configuration: %d\n' % config_failed)
     result.write('=====================================================================\n')
     result.close()
+
+
+def simulate(arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S):
+    global config_tried, config_failed, config_invalid, best_AAT, best_config
+    if is_validConfig(arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S):
+        out = subprocess.run(
+            args='./cachesim -c %d -b %d -s %d -v %d -C %d -B %d -S %d < %s' %
+                 (arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S, TRACE),
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        if out.returncode == int(0):
+            lock.acquire()
+            config_tried += 1
+            stats = out.stdout.decode('utf-8')
+            current_aat = float(ext_aat.search(stats).group(1))
+            if current_aat < best_AAT:
+                best_AAT = current_aat
+                best_config = (arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S)
+                print('(^_^)', end='')
+            else:
+                print('.', end='')
+            lock.release()
+        else:
+            lock.acquire()
+            result.write(
+                '[FAILED CONFIG] ./cachesim -c %d -b %d -s %d -v %d -C %d -B %d -S %d < %s)' %
+                (arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S, TRACE))
+            config_failed += 1
+            lock.release()
+            print('F', end='')
+    else:
+        lock.acquire()
+        result.write(
+            '[INVALID_CONFIG] L1=%d L2=%d (./cachesim -c %d -b %d -s %d -v %d -C %d -B %d '
+            '-S %d < %s)\n' % (
+                cost(arg_c, arg_b, arg_s, arg_v), cost(arg_C, arg_B, arg_S), arg_c, arg_b, arg_s, arg_v, arg_C, arg_B,
+                arg_S, TRACE))
+        config_invalid += 1
+        lock.release()
+        print('I', end='')
+    sys.stdout.flush()
 
 
 def cost(c, b, s, v=0):
@@ -92,6 +111,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         TRACE = str(sys.argv[1])
         print("Going crazy with %s" % TRACE)
+        result = open('result_%s.txt' % TRACE.replace('traces/', '').replace('.trace', ''), 'w')
         main()
     else:
         print("YOU ARE WRONG!")
