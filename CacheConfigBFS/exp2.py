@@ -31,10 +31,11 @@ def main():
                     for c in range(10, min(C + 1, 17)):
                         for b in range(0, min(c + 1, B + 1)):
                             for s in range(0, min(c - b + 1, S + 1)):
-                                executor.submit(
+                                exe = executor.submit(
                                     fn=simulate,
                                     args=(c, b, s, 4, C, B, S)
                                 )
+        executor.shutdown()
     sys.stdout.flush()
     result.write('\n\n=====================================================================\n')
     result.write('Best AAT: %f\n' % best_AAT)
