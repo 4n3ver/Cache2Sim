@@ -69,6 +69,7 @@ def simulate(arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S):
                 best_AAT = current_aat
                 best_config = (arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S)
                 print('(^_^)', end='')
+                sys.stdout.flush()
             else:
                 print('.', end='')
             lock.release()
@@ -89,8 +90,6 @@ def simulate(arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S):
                 arg_S, TRACE))
         config_invalid += 1
         lock.release()
-        print('I', end='')
-    sys.stdout.flush()
 
 
 def cost(c, b, s, v=0):
