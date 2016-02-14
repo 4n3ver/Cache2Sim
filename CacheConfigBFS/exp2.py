@@ -25,18 +25,19 @@ best_config = (0, 0, 0, 0, 0, 0, 0)  # cbsvCBS
 
 def main():
     counter = int(0)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-        for C in range(16, 19):
-            for B in range(0, C + 1):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
+        for C in range(17, 19):
+            for B in range(7, C + 1):
                 for S in range(0, C - B + 1):
                     for c in range(14, min(C + 1, 17)):
-                        for b in range(0, min(c + 1, B + 1)):
+                        for b in range(7, min(c + 1, B + 1)):
                             for s in range(0, min(c - b + 1, S + 1)):
-                                executor.submit(
-                                    simulate,
-                                    c, b, s, 4, C, B, S
-                                )
-                                counter += 1
+                                for v in range(0, 4):
+                                    executor.submit(
+                                        simulate,
+                                        c, b, s, v, C, B, S
+                                    )
+                                    counter += 1
         print("submitted %d job" % counter)
         executor.shutdown()
     sys.stdout.flush()
