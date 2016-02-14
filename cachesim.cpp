@@ -183,7 +183,7 @@ void complete_cache(cache_stats_t *p_stats) {
     ));
 
     p_stats->avg_access_time_l1 = ht1 + mr1 * mp1;
-    printf("\n");
+    //printf("\n");
 }
 
 // ADDITION BELOW
