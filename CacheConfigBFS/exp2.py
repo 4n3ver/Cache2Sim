@@ -26,18 +26,14 @@ best_config = (0, 0, 0, 0, 0, 0, 0)  # cbsvCBS
 def main():
     counter = int(0)
     with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
-        for C in range(17, 19):
-            for B in range(7, C + 1):
+        for C in range(12, 19):
+            for B in range(0, C + 1):
                 for S in range(0, C - B + 1):
-                    for c in range(14, min(C + 1, 17)):
-                        for b in range(7, min(c + 1, B + 1)):
-                            for s in range(0, min(c - b + 1, S + 1)):
-                                for v in range(0, 4):
-                                    executor.submit(
-                                        simulate,
-                                        c, b, s, v, C, B, S
-                                    )
-                                    counter += 1
+                    executor.submit(
+                        simulate,
+                        C, B, S
+                    )
+                    counter += 1
         print("submitted %d job" % counter)
         executor.shutdown()
     sys.stdout.flush()
@@ -51,46 +47,43 @@ def main():
     result.close()
 
 
-def simulate(arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S):
+def simulate(arg_C, arg_B, arg_S):
     global config_tried, config_failed, config_invalid, best_AAT, best_config
-    if is_validConfig(arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S):
-        out = subprocess.run(
-            args='./cachesim -c %d -b %d -s %d -v %d -C %d -B %d -S %d < %s' %
-                 (arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S, TRACE),
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        if out.returncode == int(0):
-            lock.acquire()
-            config_tried += 1
-            stats = out.stdout.decode('utf-8')
-            current_aat = float(ext_aat.search(stats).group(1))
-            if current_aat < best_AAT:
-                best_AAT = current_aat
-                best_config = (arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S)
-                print('(^_^)', end='')
-                sys.stdout.flush()
-            else:
-                print('.', end='')
-            lock.release()
-        else:
-            lock.acquire()
-            result.write(
-                '[FAILED CONFIG] ./cachesim -c %d -b %d -s %d -v %d -C %d -B %d -S %d < %s)' %
-                (arg_c, arg_b, arg_s, arg_v, arg_C, arg_B, arg_S, TRACE))
-            config_failed += 1
-            lock.release()
-            print('F', end='')
-    else:
-        lock.acquire()
-        result.write(
-            '[INVALID_CONFIG] L1=%d L2=%d (./cachesim -c %d -b %d -s %d -v %d -C %d -B %d '
-            '-S %d < %s)\n' % (
-                cost(arg_c, arg_b, arg_s, arg_v), cost(arg_C, arg_B, arg_S), arg_c, arg_b, arg_s, arg_v, arg_C, arg_B,
-                arg_S, TRACE))
-        config_invalid += 1
-        lock.release()
+    for c in range(10, min(arg_C + 1, 17)):
+        for b in range(0, min(c + 1, arg_B + 1)):
+            for s in range(0, min(c - b + 1, arg_S + 1)):
+                for v in range(0, 5):
+                    if is_validConfig(c, b, s, v, arg_C, arg_B, arg_S):
+                        out = subprocess.run(
+                            args='./cachesim -c %d -b %d -s %d -v %d -C %d -B %d -S %d < %s' %
+                                 (c, b, s, v, arg_C, arg_B, arg_S, TRACE),
+                            shell=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE
+                        )
+                        if out.returncode == int(0):
+                            lock.acquire()
+                            config_tried += 1
+                            stats = out.stdout.decode('utf-8')
+                            current_aat = float(ext_aat.search(stats).group(1))
+                            if current_aat < best_AAT:
+                                best_AAT = current_aat
+                                best_config = (c, b, s, v, arg_C, arg_B, arg_S)
+                                print('(^_^)', end='')
+                                sys.stdout.flush()
+                            else:
+                                print('.', end='')
+                            lock.release()
+                        else:
+                            lock.acquire()
+                            result.write(
+                                '[FAILED CONFIG] ./cachesim -c %d -b %d -s %d -v %d -C %d -B %d -S %d < %s)' %
+                                (c, b, s, v, arg_C, arg_B, arg_S, TRACE))
+                            config_failed += 1
+                            lock.release()
+                            print('F', end='')
+                    else:
+                        config_invalid += 1
 
 
 def cost(c, b, s, v=0):
