@@ -1,0 +1,9 @@
+
+
+=====================================================================
+Best AAT: 2.909599
+Best Configuration (c, b, s, v, C, B, S): (15, 7, 0, 4, 17, 7, 7)
+Simulated Configuration: 428627
+Invalid Configuration: 417523
+Failed Configuration: 0
+=====================================================================
