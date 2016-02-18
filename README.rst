@@ -35,32 +35,48 @@ Best Configurations
 + **A\***::
 
 Best AAT: 2.804164
+
 Best Configuration (c, b, s, v, C, B, S): (12, 12, 0, 4, 17, 12, 4)
-Simulated Configuration: 428627
-Invalid Configuration: 417523
+
+Simulated Configuration: 428627\
+
+Invalid Configuration: 417523\
+
 Failed Configuration: 0
 
 + **bzip2**::
 
 Best AAT: 2.000206
+
 Best Configuration (c, b, s, v, C, B, S): (15, 12, 0, 3, 17, 14, 0)
+
 Simulated Configuration: 428627
+
 Invalid Configuration: 417523
+
 Failed Configuration: 0
 
 + **mcf**::
 
 Best AAT: 2.121731
+
 Best Configuration (c, b, s, v, C, B, S): (15, 10, 0, 4, 17, 13, 4)
+
 Simulated Configuration: 428627
+
 Invalid Configuration: 417523
+
 Failed Configuration: 0
 
 + **perlbench**::
 
 Best AAT: 2.909599
+
 Best Configuration (c, b, s, v, C, B, S): (15, 7, 0, 4, 17, 7, 7)
+
 Simulated Configuration: 428627
+
 Invalid Configuration: 417523
+
 Failed Configuration: 0
 
